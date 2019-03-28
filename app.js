@@ -66,7 +66,6 @@ app.route('/session')
     });
 
 console.log('server is waiting...');
-console.log('server is waiting...');
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -82,6 +81,11 @@ app.use(function (err, req, res, next) {
     // render the error page
     res.status(err.status || 500);
     res.render('error');
+});
+
+process.on('SIGINT', function () {
+    console.log("Caught interrupt signal");
+    process.exit();
 });
 
 module.exports = app;
